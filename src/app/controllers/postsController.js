@@ -62,5 +62,3 @@ exports.post_update= async(req, res) =>{
         res.send({erro: 'erro ao procurar a postagem'});
     }
 };
-
-
