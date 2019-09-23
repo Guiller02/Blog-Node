@@ -11,7 +11,7 @@ function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret, {
       expiresIn: 86400
     });
-  }
+  };
 
 // Create a new User
 exports.User_register = async(req, res) =>{
