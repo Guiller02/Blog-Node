@@ -1,5 +1,7 @@
 var Post = require('../models/postsModel');
 
+var Comment = require('../models/commentsModel');
+
 // Display all posts
 exports.post_list = async (req, res) => {
     try {
@@ -25,10 +27,11 @@ exports.post_create = async (req, res) => {
 };
 
 // Show unique post
-exports.post_search = async (req, res) => {
+exports.post_search = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.postId).populate('user');
-        res.send({ post });
+        const comments = await Comment.find(req.body.postId);
+        res.send({ post, comments});
     } catch (err) {
         res.send({ erro: 'erro ao procurar a postagem' });
         console.log(err);
