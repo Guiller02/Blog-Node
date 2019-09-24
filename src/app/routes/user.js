@@ -8,7 +8,9 @@ router.post('/register', User.User_register);
 
 router.post('/login', User.User_login);
 
-// router.get('/:UserId', User.User_search);
+router.get('/perfil', User.user_perfil);
+
+router.get('/:UserId', User.user_find)
 
 // router.delete('/:UserId', User.User_delete);
 
