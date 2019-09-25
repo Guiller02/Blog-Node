@@ -58,13 +58,13 @@ exports.User_login = async (req, res) => {
   });
 };
 
-// Show perfil
-exports.user_perfil = async (req, res) => {
+// Show profile
+exports.user_profile = async (req, res) => {
   try {
-    const user = await User.findOne(req.params.UserId)
+    const user = await User.findById(req.params.UserId)
     res.send({ user });
   } catch (err) {
-    res.send({ erro: 'erro ao procurar a postagem' });
+    res.send({ erro: 'usuario invalido' });
     console.log(err);
   }
 };
@@ -80,22 +80,67 @@ exports.user_find = async (req, res) => {
   }
 };
 
-// Update user
-// exports.Comment_update = async (req, res) => {
-//   try {
-//     //Retornando usuario logado
-//     const isUser = req.userId;
-//     const { comment } = req.body;
-//     if (comment == null)
-//       res.status(400).send({ error: 'Cannot update' })
-//     const updatedComment = await Comment.findByIdAndUpdate(req.params.CommentId, {
-//       comment
-//     }, { new: true });
+//update user
+exports.user_update = async (req,res) =>{
+  try{
+    //to search in database, the user id who are inside the token
+    const { _id } = await User.findById(req.userId);
 
-//     res.send({ updatedComment });
+    //to take id in route
+    const user = req.params.UserId;
 
-//   } catch (err) {
-//     console.log(err);
-//     res.send({ erro: 'erro ao procurar o comentario' });
-//   }
-// };
+    //if user id in token are not equal to user in params, return not allowed
+    if(_id!=user)
+      res.status(400).send({error:'not allowed'});
+
+    const { name, password, email } = req.body;
+
+    //To find user and update email to null, in case of update the same email which was before
+    await User.findByIdAndUpdate(user,{
+      email:null
+    });
+
+    //in case of the new email already exists in another user
+    if (await User.findOne({ email }))
+      res.status(400).send({error:'email already exist'});
+
+    //to see if one of the fields are equal to null or blank
+    if (
+      (name == "")||(name == null) ||
+      (email == "") || (email == null) || 
+      (password == "") || (password == null)
+    )
+      res.send({error:'verify fields again'});
+
+    //update user with all fields
+    const updatedUser = await User.findByIdAndUpdate(user, {
+      name,
+      email,
+      password 
+    },{ new: true });
+
+    //return the user updated
+    res.send(updatedUser)
+  }catch(err){
+    res.status(400).send({error:'Error updating user'});
+    console.log(err)
+  }
+};
+
+//logout
+exports.user_logout = async (req,res)=>{
+  try{
+    const user = await User.findOne(req.UserId)
+    const token = jwt.sign({id:user.id},
+      authConfig.secret,{
+        expiresIn:2
+      }
+      )
+    res.send({token})
+
+  }catch(err){
+    console.log(err)
+    res.status(400).send({error:'error'})
+  }
+  
+}

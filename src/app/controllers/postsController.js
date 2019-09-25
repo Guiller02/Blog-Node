@@ -30,7 +30,7 @@ exports.post_create = async (req, res) => {
 exports.post_search = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.postId).populate('user', 'name');
-        const comments = await Comment.find(req.body.postId).populate('user', 'name').sort([['rank', 'descending']]);
+        const comments = await Comment.find({post:post}).populate('user', 'name').sort([['rank', 'descending']]);
         if (comments == 0)
             res.send({ post })
         res.send({ post, comments });

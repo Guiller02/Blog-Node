@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 mongoose.connect("mongodb://localhost/blog", { 
     useNewUrlParser: true,
-    useUnifiedTopology: true 
+    useUnifiedTopology: true,
+    useFindAndModify:false
 }, () =>{
     console.log('Conected to mongodb');
 });
