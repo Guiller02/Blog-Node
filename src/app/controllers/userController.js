@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 // Generate token
 function generateToken(params = {}) {
   return jwt.sign(params, authConfig.secret, {
-    expiresIn: 86400
+    expiresIn: 300
   });
 };
 
@@ -130,17 +130,10 @@ exports.user_update = async (req,res) =>{
 //logout
 exports.user_logout = async (req,res)=>{
   try{
-    const user = await User.findOne(req.UserId)
-    const token = jwt.sign({id:user.id},
-      authConfig.secret,{
-        expiresIn:2
-      }
-      )
-    res.send({token})
-
+    res.status(200).send({ auth: false, token: null });
   }catch(err){
     console.log(err)
-    res.status(400).send({error:'error'})
+    res.status(400).send({error:'error in logout'})
   }
   
 }
