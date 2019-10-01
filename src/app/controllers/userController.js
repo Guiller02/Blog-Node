@@ -61,7 +61,7 @@ exports.User_login = async (req, res) => {
 // Show profile
 exports.user_profile = async (req, res) => {
   try {
-    const user = await User.findById(req.params.UserId)
+    const user = await User.findById(req.userId)
     res.send({ user });
   } catch (err) {
     res.send({ erro: 'usuario invalido' });
@@ -81,8 +81,8 @@ exports.user_find = async (req, res) => {
 };
 
 //update user
-exports.user_update = async (req,res) =>{
-  try{
+exports.user_update = async (req, res) => {
+  try {
     //to search in database, the user id who are inside the token
     const { _id } = await User.findById(req.userId);
 
@@ -90,50 +90,50 @@ exports.user_update = async (req,res) =>{
     const user = req.params.UserId;
 
     //if user id in token are not equal to user in params, return not allowed
-    if(_id!=user)
-      res.status(400).send({error:'not allowed'});
+    if (_id != user)
+      res.status(400).send({ error: 'not allowed' });
 
     const { name, password, email } = req.body;
 
     //To find user and update email to null, in case of update the same email which was before
-    await User.findByIdAndUpdate(user,{
-      email:null
+    await User.findByIdAndUpdate(user, {
+      email: null
     });
 
     //in case of the new email already exists in another user
     if (await User.findOne({ email }))
-      res.status(400).send({error:'email already exist'});
+      res.status(400).send({ error: 'email already exist' });
 
     //to see if one of the fields are equal to null or blank
     if (
-      (name == "")||(name == null) ||
-      (email == "") || (email == null) || 
+      (name == "") || (name == null) ||
+      (email == "") || (email == null) ||
       (password == "") || (password == null)
     )
-      res.send({error:'verify fields again'});
+      res.send({ error: 'verify fields again' });
 
     //update user with all fields
     const updatedUser = await User.findByIdAndUpdate(user, {
       name,
       email,
-      password 
-    },{ new: true });
+      password
+    }, { new: true });
 
     //return the user updated
     res.send(updatedUser)
-  }catch(err){
-    res.status(400).send({error:'Error updating user'});
+  } catch (err) {
+    res.status(400).send({ error: 'Error updating user' });
     console.log(err)
   }
 };
 
 //logout
-exports.user_logout = async (req,res)=>{
-  try{
+exports.user_logout = async (req, res) => {
+  try {
     res.status(200).send({ auth: false, token: null });
-  }catch(err){
+  } catch (err) {
     console.log(err)
-    res.status(400).send({error:'error in logout'})
+    res.status(400).send({ error: 'error in logout' })
   }
-  
+
 }
